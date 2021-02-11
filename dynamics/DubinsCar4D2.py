@@ -62,7 +62,7 @@ class DubinsCar4D2:
             assert dMode == "min"
         self.dMode = dMode
 
-    def opt_ctrl(self, t, state, spat_deriv):
+    def opt_ctrl(self, t, state, spat_deriv, use_hcl = True):
         """
         :param t: time t
         :param state: tuple of coordinates
@@ -75,26 +75,42 @@ class DubinsCar4D2:
         # v_dot = a
         # theta_dot = v * tan(delta) / L
 
-        # Graph takes in 4 possible inputs, by default, for now
-        opt_a = hcl.scalar(self.uMax[0], "opt_a")
-        opt_w = hcl.scalar(self.uMax[1], "opt_w")
-        # Just create and pass back, even though they're not used
-        in3 = hcl.scalar(0, "in3")
-        in4 = hcl.scalar(0, "in4")
+        if use_hcl:
+            # Graph takes in 4 possible inputs, by default, for now
+            opt_a = hcl.scalar(self.uMax[0], "opt_a")
+            opt_w = hcl.scalar(self.uMax[1], "opt_w")
+            # Just create and pass back, even though they're not used
+            in3 = hcl.scalar(0, "in3")
+            in4 = hcl.scalar(0, "in4")
 
 
-        if self.uMode == "min":
-            with hcl.if_(spat_deriv[2] > 0):
-                opt_a[0] = self.uMin[0]
-            with hcl.if_(spat_deriv[3] > 0):
-                opt_w[0] = self.uMin[1]
+            if self.uMode == "min":
+                with hcl.if_(spat_deriv[2] > 0):
+                    opt_a[0] = self.uMin[0]
+                with hcl.if_(spat_deriv[3] > 0):
+                    opt_w[0] = self.uMin[1]
+            else:
+                with hcl.if_(spat_deriv[2] < 0):
+                    opt_a[0] = self.uMin[0]
+                with hcl.if_(spat_deriv[3] < 0):
+                    opt_w[0] = self.uMin[1]
+            # return 3, 4 even if you don't use them
+            return (opt_a[0], opt_w[0], in3[0], in4[0])
         else:
-            with hcl.if_(spat_deriv[2] < 0):
-                opt_a[0] = self.uMin[0]
-            with hcl.if_(spat_deriv[3] < 0):
-                opt_w[0] = self.uMin[1]
-        # return 3, 4 even if you don't use them
-        return (opt_a[0], opt_w[0], in3[0], in4[0])
+            opt_a = self.uMax[0]
+            opt_w = self.uMax[1]
+            if self.uMode == "min":
+                if spat_deriv[2] > 0:
+                    opt_a = self.uMin[0]
+                if spat_deriv[3] > 0:
+                    opt_w = self.uMin[1]
+            else:
+                if spat_deriv[2] < 0:
+                    opt_a = self.uMin[0]
+                if spat_deriv[3] < 0:
+                    opt_w = self.uMin[1]
+            return None, None, opt_a, opt_w
+
 
 
     def optDstb(self, spat_deriv):
