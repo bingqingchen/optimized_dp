@@ -41,7 +41,7 @@ my_car = DubinsCar4D2()
 # Use the grid to initialize initial value function
 Initial_value_f = CylinderShape(g, [3,4], np.array([0, 2, 0, 0]), [1])
 Initial_value_f = np.minimum(Initial_value_f, Lower_Half_Space(g, 2, 0))
-Initial_value_f = np.minimum(Initial_value_f, Upper_Half_Space(g, 2, 1))
+Initial_value_f = np.minimum(Initial_value_f, Upper_Half_Space(g, 2, 1.1))
 
 # Look-back lenght and time step
 lookback_length = 1.0
@@ -50,11 +50,11 @@ t_step = 0.05
 small_number = 1e-5
 tau = np.arange(start=0, stop=lookback_length + small_number, step=t_step)
 
-def main():
+def solve():
     po = PlotOptions("3d_plot", [0,1,3], [24])
     V = HJSolver(my_car, g, Initial_value_f, tau, "minVWithV0", po)
-    np.save("testr", V)
+    # np.save("test_value_fn", V)
 
 
 if __name__ == "__main__":
-   main()
+   solve()
