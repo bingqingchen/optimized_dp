@@ -1,5 +1,5 @@
-from user_definer import g
-from user_definer import my_car as car
+from user_definer_mo import g
+from user_definer_mo import my_car as car
 from plot_options import PlotOptions
 from Plots.plotting_utilities import plot_isosurface
 import numpy as np
