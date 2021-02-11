@@ -90,7 +90,11 @@ def Lower_Half_Space(grid, dim, value):
 
 
 def Upper_Half_Space(grid, dim, value):
+<<<<<<< HEAD
     """Creates an axis aligned upper half space 
+=======
+    """Creates an axis aligned lower half space 
+>>>>>>> origin/master
 
     Args:
         grid (Grid): Grid object
