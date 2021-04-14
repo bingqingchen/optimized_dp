@@ -80,7 +80,8 @@ class RaceTrack():
     
     def get_init_value(self, grid, u_init = 0.5, basis = None): 
         data = np.zeros((grid.pts_each_dim[0], grid.pts_each_dim[1]))
-
+        xx = []
+        yy = []
         for idx_x, x in enumerate(grid.vs[0][:, 0, 0, 0]):
             for idx_y, y in enumerate(grid.vs[1][0, :, 0, 0]):
                 idx = (idx_x, idx_y)
@@ -90,6 +91,11 @@ class RaceTrack():
                     p = np.array([x, y])
                 v, _ = self._calc_value(p, u_init)
                 data[idx] = v
+                xx.append(p[0])
+                yy.append(p[1])
+        xx = np.array(xx).reshape(data.shape)
+        yy = np.array(yy).reshape(data.shape)
         # expand to match the dimension of the grid
         data = np.expand_dims(data, axis = [2, 3])
-        return np.tile(data, (1, 1, grid.pts_each_dim[2], grid.pts_each_dim[3]))
+        data = np.tile(data, (1, 1, grid.pts_each_dim[2], grid.pts_each_dim[3]))
+        return data, xx, yy

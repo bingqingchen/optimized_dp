@@ -9,7 +9,7 @@ from computeGraphs.graph_4D import *
 from computeGraphs.graph_5D import *
 from computeGraphs.graph_6D import *
 
-def HJSolver(dynamics_obj, grid, init_value, tau, compMethod, plot_option):
+def HJSolver(dynamics_obj, grid, init_value, tau, compMethod, plot_option, plot_flag = True):
     print("Welcome to optimized_dp \n")
 
     ################### PARSING ARGUMENTS FROM USERS #####################
@@ -110,8 +110,9 @@ def HJSolver(dynamics_obj, grid, init_value, tau, compMethod, plot_option):
 
 
     ##################### PLOTTING #####################
-    if args.plot:
+    if plot_flag:
         # plot Value table when speed is maximum
         plot_isosurface(grid, V_1.asnumpy(), plot_option)
         #plot_isosurface(g, my_V, [0, 1, 3], 10)
 
+    return V_1.asnumpy()

@@ -10,8 +10,14 @@ from dynamics.DubinsCar4D2 import DubinsCar4D2
 from plot_options import PlotOptions
 from solver import HJSolver
 
-name = 'Thruxton'
-track = RaceTrack(name)
+import os, sys, pathlib, json
+save_path = os.path.abspath('../safety_sets/')
+sys.path.append(save_path)
+
+import pdb
+
+trackName = 'Thruxton'
+track = RaceTrack(trackName)
 step = 24
 interval = 36
 
@@ -22,10 +28,11 @@ v_max = 30
 
 def get_mesh_value(idx, interval=interval):
     start_pt = track.centerline_arr[idx]
-    end_pt = track.centerline_arr[idx + interval]
+    end_idx = (idx + interval) % track.raceline_length 
+    end_pt = track.centerline_arr[end_idx]
     yaw = track.race_yaw[idx]
-    yaw_min = min(track.race_yaw[idx:idx+interval]) - math.pi/6
-    yaw_max = max(track.race_yaw[idx:idx+interval]) + math.pi/6
+    yaw_min = min(track.race_yaw[idx:end_idx]) - math.pi/6
+    yaw_max = max(track.race_yaw[idx:end_idx]) + math.pi/6
     
     pts = []
     u_init = idx/track.raceline_length
@@ -39,13 +46,14 @@ def get_mesh_value(idx, interval=interval):
     x_min, x_max, y_min, y_max = fitRectangle(pts_local)
 
     g = Grid(np.array([x_min, y_min-1, v_min, yaw_min]), 
-            np.array([x_max, y_max+1, v_max, yaw_max]), 4, np.array([15, 15, 10, 18]), [3])
+            np.array([x_max, y_max+1, v_max, yaw_max]), 4, 
+            np.array([15, 15, 15, 18]), [3])
 
     # The value function should be calculated in the global coordinate.
     basis = np.array([[np.cos(yaw), -np.sin(yaw), start_pt[0]], 
                     [np.sin(yaw), np.cos(yaw), start_pt[1]]])
-    V0 = track.get_init_value(g, u_init = u_init, basis=basis)
-    return g, V0
+    V0, XX, YY = track.get_init_value(g, u_init = u_init, basis=basis)
+    return g, V0, XX, YY
 
 # Look-back lenght and time step
 lookback_length = 0.1 * 6
@@ -55,5 +63,14 @@ tau = np.arange(start=0, stop=lookback_length + small_number, step=t_step)
 po = PlotOptions("3d_plot", [0,1,3], [5])
 
 for idx in np.arange(0, track.raceline_length, step = step):
-    g, V0 = get_mesh_value(idx)
-    HJSolver(my_car, g, V0, tau, "minVWithV0", po)
+    g, V0, XX, YY = get_mesh_value(idx)
+    V1 = HJSolver(my_car, g, V0, tau, "minVWithV0", po, plot_flag = False)
+    #pdb.set_trace()
+    np.savez_compressed(f"{save_path}/{trackName}/{idx}", 
+                        V=V1, 
+                        x = g.vs[0][:, 0, 0, 0], 
+                        y = g.vs[1][0, :, 0, 0],
+                        v = g.vs[2][0, 0, :, 0],
+                        yaw = g.vs[3][0, 0, 0, :],
+                        xx = XX, yy = YY ## (X, Y) in global coordindate
+                        )

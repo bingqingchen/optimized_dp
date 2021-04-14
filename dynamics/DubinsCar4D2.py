@@ -20,8 +20,8 @@ class DubinsCar4D2:
     def __init__(
         self,
         x=[0, 0, 0, 0],
-        uMin=[-6, -math.pi / 18],
-        uMax=[16, math.pi / 18],
+        uMin=[-16, -math.pi / 18],
+        uMax=[6, math.pi / 18],
         dMin=[0.0, 0.0],
         dMax=[0.0, 0.0],
         uMode="min",
@@ -129,8 +129,7 @@ class DubinsCar4D2:
         return (d1[0], d2[0], d3[0], d4[0])
 
     def dynamics(self, t, state, uOpt, dOpt):
-        # wheelbase of Tamiya TT02
-        L = hcl.scalar(3.0, "L")
+        L = hcl.scalar(3.0, "L") # Car length
 
         x_dot = hcl.scalar(0, "x_dot")
         y_dot = hcl.scalar(0, "y_dot")
