@@ -1,7 +1,9 @@
 import plotly.graph_objects as go
 import numpy as np
+import pdb
 
 def plot_isosurface(grid, V, plot_option):
+    # pdb.set_trace()
     dims_plot = plot_option.dims_plot
     idx = [slice(None)] * grid.dims
     slice_idx = 0

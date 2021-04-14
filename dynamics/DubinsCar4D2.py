@@ -20,12 +20,11 @@ class DubinsCar4D2:
     def __init__(
         self,
         x=[0, 0, 0, 0],
-        uMin=[-1.5, -math.pi / 18],
-        uMax=[1.5, math.pi / 18],
+        uMin=[-6, -math.pi / 18],
+        uMax=[16, math.pi / 18],
         dMin=[0.0, 0.0],
         dMax=[0.0, 0.0],
-        uMode="max",
-        dMode="min",
+        uMode="min",
     ):
 
         """Creates a Dublin Car with the following states:
@@ -57,9 +56,9 @@ class DubinsCar4D2:
         assert uMode in ["min", "max"]
         self.uMode = uMode
         if uMode == "min":
-            assert dMode == "max"
+            dMode = "max"
         else:
-            assert dMode == "min"
+            dMode = "min"
         self.dMode = dMode
 
     def opt_ctrl(self, t, state, spat_deriv):
@@ -131,7 +130,7 @@ class DubinsCar4D2:
 
     def dynamics(self, t, state, uOpt, dOpt):
         # wheelbase of Tamiya TT02
-        L = hcl.scalar(0.3, "L")
+        L = hcl.scalar(3.0, "L")
 
         x_dot = hcl.scalar(0, "x_dot")
         y_dot = hcl.scalar(0, "y_dot")

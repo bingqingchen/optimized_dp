@@ -108,6 +108,7 @@ def HJSolver(dynamics_obj, grid, init_value, tau, compMethod, plot_option):
     print("Total kernel time (s): {:.5f}".format(execution_time))
     print("Finished solving\n")
 
+
     ##################### PLOTTING #####################
     if args.plot:
         # plot Value table when speed is maximum
