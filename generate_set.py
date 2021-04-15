@@ -28,11 +28,16 @@ v_max = 30
 
 def get_mesh_value(idx, interval=interval):
     start_pt = track.centerline_arr[idx]
+    #pdb.set_trace()
     end_idx = (idx + interval) % track.raceline_length 
     end_pt = track.centerline_arr[end_idx]
     yaw = track.race_yaw[idx]
-    yaw_min = min(track.race_yaw[idx:end_idx]) - math.pi/6
-    yaw_max = max(track.race_yaw[idx:end_idx]) + math.pi/6
+    if idx + interval > track.raceline_length:
+        yaw_min = min(np.concatenate([track.race_yaw[idx:], track.race_yaw[:end_idx]])) - math.pi/6
+        yaw_max = max(np.concatenate([track.race_yaw[idx:], track.race_yaw[:end_idx]])) + math.pi/6
+    else:
+        yaw_min = min(track.race_yaw[idx:end_idx]) - math.pi/6
+        yaw_max = max(track.race_yaw[idx:end_idx]) + math.pi/6
     
     pts = []
     u_init = idx/track.raceline_length
@@ -62,7 +67,7 @@ small_number = 1e-5
 tau = np.arange(start=0, stop=lookback_length + small_number, step=t_step)
 po = PlotOptions("3d_plot", [0,1,3], [5])
 
-for idx in np.arange(0, track.raceline_length, step = step):
+for idx in [7440]:#np.arange(0, track.raceline_length, step = step):
     g, V0, XX, YY = get_mesh_value(idx)
     V1 = HJSolver(my_car, g, V0, tau, "minVWithV0", po, plot_flag = False)
     #pdb.set_trace()
